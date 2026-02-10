@@ -9,15 +9,23 @@ AI-powered React component generator with live preview.
 
 ## Setup
 
-1. **Optional** Edit `.env` and add your Anthropic API key:
+1. **Required** - Get your Anthropic API key from [https://console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+
+2. Copy `.env.example` to `.env` and add your API key:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your API key:
 
 ```
 ANTHROPIC_API_KEY=your-api-key-here
 ```
 
-The project will run without an API key. Rather than using a LLM to generate components, static code will be returned instead.
+**Note:** The application requires a valid Anthropic API key to function. Component generation will not work without it.
 
-2. Install dependencies and initialize database
+3. Install dependencies and initialize database
 
 ```bash
 npm run setup

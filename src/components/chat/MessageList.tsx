@@ -8,9 +8,10 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 interface MessageListProps {
   messages: Message[];
   isLoading?: boolean;
+  error?: Error;
 }
 
-export function MessageList({ messages, isLoading }: MessageListProps) {
+export function MessageList({ messages, isLoading, error }: MessageListProps) {
   if (messages.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full px-4 text-center">
@@ -26,6 +27,21 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
   return (
     <div className="flex flex-col h-full overflow-y-auto px-4 py-6">
       <div className="space-y-6 max-w-4xl mx-auto w-full">
+        {error && (
+          <div className="rounded-xl px-4 py-3 bg-red-50 border border-red-200 text-red-900">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-sm mb-1">Error</p>
+                <p className="text-sm">{error.message}</p>
+              </div>
+            </div>
+          </div>
+        )}
         {messages.map((message) => (
           <div
             key={message.id || message.content}

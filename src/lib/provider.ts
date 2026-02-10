@@ -6,7 +6,7 @@ export function getLanguageModel() {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
   if (!apiKey || apiKey.trim() === "") {
-    console.log("No ANTHROPIC_API_KEY found, using Anthropic without key (requests will fail)");
+    throw new Error("ANTHROPIC_API_KEY is required but not found in environment variables");
   }
 
   return anthropic(MODEL);
