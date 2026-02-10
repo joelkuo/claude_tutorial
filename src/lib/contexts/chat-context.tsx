@@ -21,6 +21,7 @@ interface ChatContextType {
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   status: string;
+  error: Error | undefined;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -38,6 +39,7 @@ export function ChatProvider({
     handleInputChange,
     handleSubmit,
     status,
+    error,
   } = useAIChat({
     api: "/api/chat",
     initialMessages,
@@ -65,6 +67,7 @@ export function ChatProvider({
         handleInputChange,
         handleSubmit,
         status,
+        error,
       }}
     >
       {children}

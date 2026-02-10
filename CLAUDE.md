@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-UIGen is an AI-powered React component generator with live preview. Users describe components in chat, and the AI generates React code in a virtual file system, displaying it in real-time with hot reload. The application can run with or without an Anthropic API key (using a mock provider when no key is present).
+UIGen is an AI-powered React component generator with live preview. Users describe components in chat, and the AI generates React code in a virtual file system, displaying it in real-time with hot reload. The application requires a valid Anthropic API key to function.
 
 ## Key Commands
 
@@ -43,11 +43,13 @@ npm run lint           # Run ESLint
 ### Core Data Flow
 
 1. **Chat API Route** (`src/app/api/chat/route.ts`):
+   - Validates ANTHROPIC_API_KEY is present before processing
    - Receives messages and virtual file system state from client
    - Adds system prompt with AI instructions for component generation
-   - Uses Vercel AI SDK's `streamText` with Claude (or mock provider)
+   - Uses Vercel AI SDK's `streamText` with Claude
    - Provides two AI tools: `str_replace_editor` and `file_manager`
    - Streams responses back to client with tool calls
+   - Returns error responses to client if API key is missing or API calls fail
    - Saves conversation and file state to database on completion (for authenticated users)
 
 2. **Virtual File System** (`src/lib/file-system.ts`):
@@ -59,7 +61,7 @@ npm run lint           # Run ESLint
 
 3. **Client-Side Contexts**:
    - **FileSystemContext** (`src/lib/contexts/file-system-context.tsx`): Manages virtual FS state on client, handles tool call updates, syncs with UI
-   - **ChatContext** (`src/lib/contexts/chat-context.tsx`): Manages chat state, sends messages to API, processes streaming responses
+   - **ChatContext** (`src/lib/contexts/chat-context.tsx`): Manages chat state, sends messages to API, processes streaming responses, exposes errors to UI
 
 4. **JSX Transformation & Preview** (`src/lib/transform/jsx-transformer.ts`):
    - Transforms JSX/TSX to browser-compatible JavaScript using Babel standalone
@@ -87,9 +89,9 @@ Prisma with SQLite (`prisma/schema.prisma`):
 ### Provider System
 
 `src/lib/provider.ts` exports `getLanguageModel()`:
-- Checks for `ANTHROPIC_API_KEY` in environment
-- Returns Anthropic Claude Haiku 4.5 if key exists
-- Falls back to `MockLanguageModel` with pre-scripted responses if no key
+- Requires `ANTHROPIC_API_KEY` in environment
+- Returns Anthropic Claude Haiku 4.5
+- Throws an error if API key is not configured
 
 ### AI Tools
 
@@ -144,7 +146,7 @@ Prisma with SQLite (`prisma/schema.prisma`):
 
 ### Environment Variables
 
-- `ANTHROPIC_API_KEY`: Optional. App works without it using mock provider
+- `ANTHROPIC_API_KEY`: **Required**. Get your API key from https://console.anthropic.com/settings/keys
 - `JWT_SECRET`: Defaults to `"development-secret-key"` if not set
 - Database URL configured in `prisma/schema.prisma` (SQLite at `prisma/dev.db`)
 
@@ -169,7 +171,6 @@ Prisma with SQLite (`prisma/schema.prisma`):
 
 - Edit system prompt in `src/lib/prompts/generation.tsx`
 - System prompt uses prompt caching (Anthropic cache control)
-- For mock provider: update `MockLanguageModel.generateMockStream()` in `src/lib/provider.ts`
 
 ### Adding Server Actions
 
